@@ -9,14 +9,13 @@
       <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
       <div class="row">
         <label for="horseName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Name
+          Name *
         </label>
         <div class="col-md-10 col-lg-8"
              >
           <input type="text"
                  id="horseName"
                  name="horseName"
-                 placeholder="Horse name"
                  class="form-control"
                  [class]="dynamicCssClassesForInput(horseNameModel)"
                  [(ngModel)]="horse.name"
@@ -33,13 +32,15 @@
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label for="horseDateOfBirth" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Date of Birth
+          Date of Birth *
         </label>
         <div class="col-md-10 col-lg-8"
              >
           <input type="date"
                  id="horseDateOfBirth"
                  name="horseDateOfBirth"
+
+                 placeholder=""
                  class="form-control"
                  [class]="dynamicCssClassesForInput(horseDateOfBirthModel)"
                  [(ngModel)]="horse.dateOfBirth"
@@ -60,7 +61,7 @@
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label for="horseSex" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Sex
+          Sex *
         </label>
         <div class="col-md-10 col-lg-8"
              >
@@ -73,6 +74,9 @@
             <option value="FEMALE">Female</option>
             <option value="MALE">Male</option>
           </select>
+          <div class="invalid-feedback">
+            Sex is required
+          </div>
         </div>
       </div>
     </div>
@@ -114,7 +118,19 @@
     </div>
   </div>
 
+  <br />
+  <div class="row">
+  <label class="col-form-label  text-muted"> Fields marked with * are mandatory.</label>
+  </div>
+
+
+
   <div class="mt-4 d-flex flex-row">
+
+    <button type="button" class="btn btn-light" routerLink="/horses">
+      <i class="bi bi-arrow-left"></i>
+      Back
+    </button>
     <button type="button"
             class="btn btn-danger"
             *ngIf="!modeIsCreate"
@@ -128,6 +144,7 @@
             [disabled]="!form.valid"
             type="submit"
             >
+      <i class="bi bi-save2"></i>
       {{submitButtonText}}
     </button>
   </div>
