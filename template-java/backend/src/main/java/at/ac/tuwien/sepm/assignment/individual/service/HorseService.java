@@ -32,6 +32,15 @@ public interface HorseService {
    */
   HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException;
 
+  /**
+   * Create a new horse in the persistent data store.
+   *
+   * @param newHorse the data for the new owner
+   * @throws ValidationException if the data given for the horse to be created is in itself incorrect (description too long, no name, …)
+   * @throws ConflictException if the update data given for the horse is in conflict the data currently in the system (owner does not exist, …)
+   */
+  HorseDetailDto create(HorseDetailDto newHorse) throws ValidationException, ConflictException;
+
 
   /**
    * Get the horse with given ID, with more detail information.

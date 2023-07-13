@@ -37,4 +37,13 @@ public interface HorseDao {
    * @throws NotFoundException if the Horse with the given ID does not exist in the persistent data store
    */
   Horse getById(long id) throws NotFoundException;
+
+
+  /**
+   * Get a horse by its ID from the persistent data store.
+   *
+   * @param horse the horse we want to add
+   * @return the newly created horse that is now added to the list of all existing horses
+   */
+  Horse create(HorseDetailDto horse);
 }
