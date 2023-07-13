@@ -20,20 +20,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class HorseServiceImpl implements HorseService {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final HorseDao dao;
   private final HorseMapper mapper;
-  private final HorseValidator validator;
+  private final HorseValidator horseValidator;
   private final OwnerService ownerService;
 
-  public HorseServiceImpl(HorseDao dao, HorseMapper mapper, HorseValidator validator, OwnerService ownerService) {
+  public HorseServiceImpl(HorseDao dao, HorseMapper mapper, HorseValidator horseValidator, OwnerService ownerService) {
     this.dao = dao;
     this.mapper = mapper;
-    this.validator = validator;
+    this.horseValidator = horseValidator;
     this.ownerService = ownerService;
   }
 
@@ -59,11 +61,21 @@ public class HorseServiceImpl implements HorseService {
   @Override
   public HorseDetailDto update(HorseDetailDto horse) throws NotFoundException, ValidationException, ConflictException {
     LOG.trace("update({})", horse);
-    validator.validateForUpdate(horse);
+    horseValidator.validateForUpdate(horse);
     var updatedHorse = dao.update(horse);
     return mapper.entityToDetailDto(
         updatedHorse,
         ownerMapForSingleId(updatedHorse.getOwnerId()));
+  }
+
+  @Override
+  public HorseDetailDto create(HorseDetailDto horse) throws ValidationException, ConflictException {
+    LOG.trace("create({})", horse);
+    horseValidator.validateForCreate(horse);
+    var createdHorse = dao.create(horse);
+    return mapper.entityToDetailDto(
+        createdHorse,
+        ownerMapForSingleId(createdHorse.getOwnerId()));
   }
 
 

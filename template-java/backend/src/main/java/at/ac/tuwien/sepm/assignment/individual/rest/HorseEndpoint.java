@@ -12,12 +12,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -55,6 +50,7 @@ public class HorseEndpoint {
 
   @PutMapping("{id}")
   public HorseDetailDto update(@PathVariable long id, @RequestBody HorseDetailDto toUpdate) throws ValidationException, ConflictException {
+    LOG.info("Updating horse...");
     LOG.info("PUT " + BASE_PATH + "/{}", toUpdate);
     LOG.debug("Body of request:\n{}", toUpdate);
     try {
@@ -65,6 +61,24 @@ public class HorseEndpoint {
       throw new ResponseStatusException(status, e.getMessage(), e);
     }
   }
+
+  @PostMapping()
+  @ResponseStatus(HttpStatus.CREATED)
+  public HorseDetailDto create(@RequestBody HorseDetailDto horse) throws ValidationException, ConflictException {
+    LOG.info("Creating new horse...");
+    LOG.info("POST " + BASE_PATH + "/create");
+    LOG.debug("Body of request:\n{}", horse);
+    return service.create(horse);
+  }
+
+  /*
+  @PostMapping
+    public ResponseEntity<HorseDto> addHorse(@RequestBody @Valid AddUpdateHorseDto addHorseDto) {
+        log.info("A user is trying to create a new horse.");
+        var addedHorseDto = service.addHorse(addHorseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedHorseDto);
+    }
+   */
 
 
   private void logClientError(HttpStatus status, String message, Exception e) {

@@ -7,13 +7,20 @@ import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import java.lang.invoke.MethodHandles;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import static java.sql.Types.NULL;
 
 @Repository
 public class HorseJdbcDao implements HorseDao {
@@ -29,6 +36,9 @@ public class HorseJdbcDao implements HorseDao {
       + "  , sex = ?"
       + "  , owner_id = ?"
       + " WHERE id = ?";
+
+  private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME
+          + " (name, description, date_of_birth, sex, owner_id/*, mother_id, father_id*/) VALUES(?, ?, ?, ?, ?/*, ?, ?*/)";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -83,6 +93,63 @@ public class HorseJdbcDao implements HorseDao {
         .setSex(horse.sex())
         .setOwnerId(horse.ownerId())
         ;
+  }
+
+  @Override
+  public Horse create(HorseDetailDto horse) {
+    LOG.trace("create({})", horse);
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbcTemplate.update(con -> {
+      java.sql.Date datetoLocalDate = new java.sql.Date(Date.from(horse.dateOfBirth().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime());
+
+      PreparedStatement stmt = con.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
+      stmt.setString(1, horse.name());
+      stmt.setString(2, horse.description());
+      stmt.setDate(3, datetoLocalDate);
+      stmt.setString(4, horse.sex().toString());
+
+      if (horse.ownerId() != null && horse.ownerId() != 0) {
+        stmt.setLong(5, horse.ownerId());
+      } else {
+        stmt.setNull(5, NULL);
+      }
+
+      /*if (horse.mother() != null && horse.mother() != 0) {
+        stmt.setLong(6, horse.mother());
+      } else {
+        stmt.setNull(6, NULL);
+      }
+
+      if (horse.father() != null && horse.father() != 0) {
+        stmt.setLong(7, horse.father());
+      } else {
+        stmt.setNull(7, NULL);
+      }
+
+       */
+
+      return stmt;
+    }, keyHolder);
+
+    Number key = keyHolder.getKey();
+    /*if (key == null) {
+      // This should never happen. If it does, something is wrong with the DB or the way the prepared statement is set up.
+      throw new FatalException("Could not extract key for newly created owner. There is probably a programming error…");
+    }
+
+     */
+
+    return new Horse()
+            .setId(key.longValue())
+            .setName(horse.name())
+            .setDescription(horse.description())
+            .setDateOfBirth(horse.dateOfBirth())
+            .setSex(horse.sex())
+            .setOwnerId(horse.ownerId())
+            //.setMotherId(newHorse.mother())
+            //.setFatherId(newHorse.father())
+            ;
   }
 
 
