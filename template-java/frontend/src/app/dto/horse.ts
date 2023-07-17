@@ -15,3 +15,11 @@ export interface HorseSearch {
   name?: string;
   // TODO fill in missing fields
 }
+
+export interface HorseDelete {
+  name: string;
+  description: string;
+  dateOfBirth: string;
+  sex: Sex;
+  ownerName: string;
+}

@@ -109,6 +109,11 @@
         <td>{{ownerName(horse.owner)}}</td>
         <td>
           <div class="btn-group">
+            <a class="btn btn-sm responsive-danger-button"
+               (click)="delete(horse.id)"
+               aria-label="Delete horse">
+              <i class="bi bi-trash"></i>
+            </a>
             <a class="btn btn-sm responsive-info-button"
                aria-label="Show horse details">
               <i class="bi bi-info-lg"></i>
