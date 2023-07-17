@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.service;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
@@ -41,6 +42,13 @@ public interface HorseService {
    */
   HorseDetailDto create(HorseDetailDto newHorse) throws ValidationException, ConflictException;
 
+  /**
+   * Deletes the horse with the given id.
+   *
+   * @param id The id of the horse to be deleted.
+   * @throws NotFoundException When no horse with the given id exists.
+   */
+  void delete(Long id) throws NotFoundException;
 
   /**
    * Get the horse with given ID, with more detail information.

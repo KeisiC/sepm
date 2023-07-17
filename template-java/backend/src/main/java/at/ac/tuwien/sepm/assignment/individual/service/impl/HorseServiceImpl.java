@@ -20,9 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class HorseServiceImpl implements HorseService {
@@ -78,6 +76,24 @@ public class HorseServiceImpl implements HorseService {
         ownerMapForSingleId(createdHorse.getOwnerId()));
   }
 
+  @Override
+  public void delete(Long id) throws NotFoundException {
+    LOG.trace("delete({})", id);
+    Horse horse = dao.getById(id);
+    mapper.entityToDetailDto(horse, ownerMapForSingleId(horse.getOwnerId()));
+
+    // if the horse to be deleted is a parent, delete that reference from the database as well
+    /*List<Horse> horseList = dao.getAll();
+    for (Horse currHorse : horseList) {
+      if (Objects.equals(currHorse.getFatherId(), horse.getId()) || Objects.equals(currHorse.getMotherId(), horse.getId())) {
+        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
+                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), null, null));
+      }
+    }
+
+     */
+    dao.delete(id);
+  }
 
   @Override
   public HorseDetailDto getById(long id) throws NotFoundException {

@@ -81,6 +81,20 @@ public class HorseEndpoint {
    */
 
 
+  @DeleteMapping("{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@PathVariable("id") long id) throws NotFoundException {
+    LOG.info("DELETE " + BASE_PATH + "/{}", id);
+    LOG.debug("Id of entity to delete:\n{}", id);
+    try {
+      service.delete(id);
+    } catch (NotFoundException e) {
+      HttpStatus status = HttpStatus.NOT_FOUND;
+      logClientError(status, "Horse to delete not found", e);
+      throw new ResponseStatusException(status, e.getMessage(), e);
+    }
+  }
+
   private void logClientError(HttpStatus status, String message, Exception e) {
     LOG.warn("{} {}: {}: {}", status.value(), message, e.getClass().getSimpleName(), e.getMessage());
   }

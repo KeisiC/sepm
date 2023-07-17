@@ -40,6 +40,8 @@ public class HorseJdbcDao implements HorseDao {
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME
           + " (name, description, date_of_birth, sex, owner_id/*, mother_id, father_id*/) VALUES(?, ?, ?, ?, ?/*, ?, ?*/)";
 
+  private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id=?";
+
   private final JdbcTemplate jdbcTemplate;
 
   public HorseJdbcDao(
@@ -95,6 +97,7 @@ public class HorseJdbcDao implements HorseDao {
         ;
   }
 
+
   @Override
   public Horse create(HorseDetailDto horse) {
     LOG.trace("create({})", horse);
@@ -133,6 +136,8 @@ public class HorseJdbcDao implements HorseDao {
     }, keyHolder);
 
     Number key = keyHolder.getKey();
+
+    // check it out... it might be important
     /*if (key == null) {
       // This should never happen. If it does, something is wrong with the DB or the way the prepared statement is set up.
       throw new FatalException("Could not extract key for newly created owner. There is probably a programming error…");
@@ -152,6 +157,19 @@ public class HorseJdbcDao implements HorseDao {
             ;
   }
 
+  public void delete(Long id) throws NotFoundException {
+    LOG.trace("Delete horse with id {}", id);
+
+    int changes = jdbcTemplate.update(connection -> {
+      PreparedStatement prepStat = connection.prepareStatement(SQL_DELETE);
+      prepStat.setLong(1, id);
+      return prepStat;
+    });
+
+    if (changes == 0) {
+      throw new NotFoundException("Could not delete horse with ID " + id);
+    }
+  }
 
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {
     return new Horse()

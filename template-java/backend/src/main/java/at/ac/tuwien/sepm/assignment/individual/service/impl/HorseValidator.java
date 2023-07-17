@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class HorseValidator {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final Pattern specialCharacters = Pattern.compile("[@_!#$%^&*()<>?/|}{~:]");
+  private final Pattern specialCharacters = Pattern.compile("[@_!#$%^&*()<>?/|}{~:§]");
 
   private final HorseDao horseDao;
   private final OwnerDao ownerDao;

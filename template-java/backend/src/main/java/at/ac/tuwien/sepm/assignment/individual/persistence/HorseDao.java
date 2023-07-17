@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.persistence;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import java.util.List;
 
@@ -38,12 +39,19 @@ public interface HorseDao {
    */
   Horse getById(long id) throws NotFoundException;
 
-
   /**
-   * Get a horse by its ID from the persistent data store.
+   * Create a new horse in the persistent data store.
    *
-   * @param horse the horse we want to add
-   * @return the newly created horse that is now added to the list of all existing horses
+   * @param horse the data to create the new horse from
+   * @return the newly created owner
    */
   Horse create(HorseDetailDto horse);
+
+  /**
+   * Delete horse by its ID from the database
+   *
+   * @param id is the new horse to be deleted
+   * @throws NotFoundException  When no {@link Horse} with the given id exists.
+   */
+  void delete(Long id) throws NotFoundException;
 }
