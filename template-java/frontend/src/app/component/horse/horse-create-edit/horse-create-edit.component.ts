@@ -44,6 +44,8 @@ export class HorseCreateEditComponent implements OnInit {
     switch (this.mode) {
       case HorseCreateEditMode.create:
         return 'Create New Horse';
+      case HorseCreateEditMode.edit:
+        return 'Edit Horse';
       default:
         return '?';
     }
@@ -52,6 +54,8 @@ export class HorseCreateEditComponent implements OnInit {
   public get submitButtonText(): string {
     switch (this.mode) {
       case HorseCreateEditMode.create:
+        return 'Save';
+      case HorseCreateEditMode.edit:
         return 'Save';
       default:
         return '?';
@@ -67,6 +71,8 @@ export class HorseCreateEditComponent implements OnInit {
     switch (this.mode) {
       case HorseCreateEditMode.create:
         return 'created';
+      case HorseCreateEditMode.edit:
+        return 'edited';
       default:
         return '?';
     }
@@ -79,6 +85,17 @@ export class HorseCreateEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
+      if (this.mode === HorseCreateEditMode.edit) {
+        const updateID: string | null = this.route.snapshot.paramMap.get('id');
+        this.service.getById(Number(updateID)).subscribe(
+          (horse: Horse) => {
+            this.horse = horse;
+          },
+          error => {
+            console.error('change', this.mode);
+          }
+        );
+      }
     });
   }
 
@@ -109,6 +126,9 @@ export class HorseCreateEditComponent implements OnInit {
         case HorseCreateEditMode.create:
           observable = this.service.create(this.horse);
           break;
+        case HorseCreateEditMode.edit:
+          observable = this.service.update(this.horse);
+          break;
         default:
           console.error('Unknown HorseCreateEditMode', this.mode);
           return;
@@ -120,6 +140,7 @@ export class HorseCreateEditComponent implements OnInit {
         },
         error: error => {
           console.error('Error creating horse', error);
+          // IMPORTANT!!!!!!!
           // TODO show an error message to the user. Include and sensibly present the info from the backend!
           this.notification.error(`Horse could not be created due to invalid parameter.`);
         }

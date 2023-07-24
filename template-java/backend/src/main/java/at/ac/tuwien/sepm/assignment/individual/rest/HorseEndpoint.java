@@ -89,6 +89,8 @@ public class HorseEndpoint {
     try {
       service.delete(id);
     } catch (NotFoundException e) {
+      // this exception can only be thrown if deleting the entity is
+      // requested directly from the backend, with a nonexistent ID
       HttpStatus status = HttpStatus.NOT_FOUND;
       logClientError(status, "Horse to delete not found", e);
       throw new ResponseStatusException(status, e.getMessage(), e);

@@ -49,4 +49,23 @@ export class HorseService {
     return this.http.delete<Horse>(baseUri + '/' + id);
   }
 
+  /**
+   * Edit an existing horse in the system.
+   *
+   * @param horse the data for the horse that is going to be edited
+   * @return an Observable for the edited horse
+   */
+  update(horse: Horse): Observable<Horse> {
+    return this.http.put<Horse>(
+      baseUri + '/' + horse.id,
+      horse
+    );
+  }
+
+  getById(id: number) {
+    console.log('Load horse details for ' + id);
+    return this.http.get<Horse>(baseUri + '/' + id);
+  }
+
+
 }
