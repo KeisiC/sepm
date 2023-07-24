@@ -148,4 +148,19 @@ export class HorseCreateEditComponent implements OnInit {
     }
   }
 
+
+  //find a way to delete the duplicate
+  public delete(id: number) {
+    this.service.delete(id).subscribe(
+      (res) => {
+        this.router.navigate(['/horses']);
+        this.notification.success(`Horse ${this.horse.name} successfully deleted.`);
+        console.log('Successfully deleted horse');
+        this.ngOnInit();
+      },
+      error => {
+        console.error('Error deleting horse', error);
+      }
+    );
+  }
 }
