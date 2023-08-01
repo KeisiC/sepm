@@ -31,27 +31,62 @@ public class HorseValidator {
   }
 
 
-  public void validateForUpdate(HorseDetailDto horse) throws ValidationException, ConflictException {
-    LOG.trace("validateForUpdate({})", horse);
+  public void validateForUpdate(HorseDetailDto updatedHorse) throws ValidationException, ConflictException {
+    LOG.trace("validateForUpdate({})", updatedHorse);
     List<String> validationErrors = new ArrayList<>();
 
-    if (horse.id() == null) {
+    if (updatedHorse.id() == null) {
       validationErrors.add("No ID given");
     }
 
-    if (horse.description() != null) {
-      if (horse.description().isBlank()) {
+    LOG.info("name...");
+    if (updatedHorse.name() == null || updatedHorse.name().isBlank()) {
+      validationErrors.add("Every horse must have a name, that consists of at least one non-whitespace character.");
+    } else {
+      if (updatedHorse.name().length() > 100) {
+        validationErrors.add("Horse name too long: longer than 100 characters");
+      } else if (specialCharacters.matcher(updatedHorse.name()).find()) {
+        validationErrors.add("Horse names may only include the following Characters: Ä, Ö, Ü, A-Z, ä, ö, ü, a-z, 0-9, -, ' '.");
+      }
+    }
+
+    LOG.info("description...");
+    if (updatedHorse.description() != null) {
+      if (updatedHorse.description().isBlank()) {
         validationErrors.add("Horse description is given but blank");
       }
-      if (horse.description().length() > 4095) {
+      if (updatedHorse.description().length() > 4095) {
         validationErrors.add("Horse description too long: longer than 4095 characters");
+      }
+    }
+
+    LOG.info("date of birth...");
+    if (updatedHorse.dateOfBirth() == null) {
+      validationErrors.add("Every horse must have a birthday.");
+    } else {
+      if (updatedHorse.dateOfBirth().atStartOfDay().isAfter(LocalDate.now().atStartOfDay())) {
+        validationErrors.add("The date of birth cannot be in the future");
+      }
+    }
+
+    LOG.info("sex...");
+    if (updatedHorse.sex() == null) {
+      validationErrors.add("Every horse must have a biological gender");
+    }
+
+    LOG.info("owner...");
+    if (updatedHorse.ownerId() != null && updatedHorse.ownerId() != 0) {
+      try {
+        ownerDao.getById(updatedHorse.ownerId());
+      } catch (NotFoundException e) {
+        validationErrors.add("The owner reference of the horse is not in the database");
       }
     }
 
     // TODO this is not complete…
 
     if (!validationErrors.isEmpty()) {
-      throw new ValidationException("Validation of horse for update failed", validationErrors);
+      throw new ValidationException("Updated horse is not valid", validationErrors);
     }
   }
 
