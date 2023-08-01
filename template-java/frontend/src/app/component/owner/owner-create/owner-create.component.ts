@@ -60,7 +60,10 @@ export class OwnerCreateComponent implements OnInit {
       },
       error: error => {
         console.error('Error creating owner', error);
+        // IMPORTANT
         // TODO show an error message to the user. Include and sensibly present the info from the backend!
+        this.notification.error(`Owner could not be created due to invalid parameter.`);
+
       }
     });
   }

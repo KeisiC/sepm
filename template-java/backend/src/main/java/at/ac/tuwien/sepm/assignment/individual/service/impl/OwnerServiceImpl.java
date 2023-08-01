@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.assignment.individual.service.impl;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerCreateDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.OwnerSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
 import at.ac.tuwien.sepm.assignment.individual.mapper.OwnerMapper;
@@ -25,11 +26,13 @@ public class OwnerServiceImpl implements OwnerService {
   private final OwnerDao dao;
   private final OwnerMapper mapper;
 
-  public OwnerServiceImpl(
-      OwnerDao dao,
-      OwnerMapper mapper) {
+  private final OwnerValidator ownerValidator;
+
+
+  public OwnerServiceImpl(OwnerDao dao, OwnerMapper mapper, OwnerValidator ownerValidator) {
     this.dao = dao;
     this.mapper = mapper;
+    this.ownerValidator = ownerValidator;
   }
 
   @Override
@@ -61,8 +64,9 @@ public class OwnerServiceImpl implements OwnerService {
   }
 
   @Override
-  public OwnerDto create(OwnerCreateDto newOwner) throws ValidationException {
+  public OwnerDto create(OwnerCreateDto newOwner) throws ValidationException, ConflictException {
     LOG.trace("create({})", newOwner);
+    ownerValidator.validateForCreate(newOwner);
     // TODO validation
     return mapper.entityToDto(dao.create(newOwner));
   }
