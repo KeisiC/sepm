@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+
+<h1 class="display-1">{{heading}}</h1>
+
+<div class="d-flex flex-row w-auto">
+
+  <span style="flex: 1"></span>
+  <div class="btn-group">
+    <button type="button" class="btn btn-dark" routerLink="/horses/edit/{{horse.id}}">
+      <i class="bi bi-pencil"></i>
+      Edit
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Start sex and owner row -->
+  <div class="mb-2 col-lg-6">
+    <div class="row">
+      <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Name
+      </label>
+      <label class="col-form-label col-md-2 col-lg-4">
+        {{horse.name}}
+      </label>
+    </div>
+  </div>
+
+  <div class="mb-2 col-lg-6">
+    <div class="row">
+      <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Date of birth
+      </label>
+      <label class="col-form-label col-md-2 col-lg-4">
+        {{horse.dateOfBirth}}
+      </label>
+    </div>
+  </div>
+  <!-- End sex and owner row -->
+</div>
+
+<div class="row">
+  <!-- Start sex and owner row -->
+  <div class="mb-2 col-lg-6">
+    <div class="row">
+      <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Sex
+      </label>
+      <label class="col-form-label col-md-2 col-lg-4">
+        {{horse.sex === 'FEMALE' ? 'Female' : 'Male'}}
+      </label>
+    </div>
+  </div>
+
+  <div class="mb-2 col-lg-6">
+    <div class="row">
+      <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Owner
+      </label>
+      <label class="col-form-label col-md-2 col-lg-4">
+        {{horse.owner}}
+      </label>
+    </div>
+  </div>
+  <!-- End sex and owner row -->
+</div>
+
+
+<div class="row">
+  <!-- Start sex and owner row -->
+
+
+  <div class="mb-2 col-lg-6">
+    <div class="row">
+      <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        Description
+      </label>
+      <label class="col-form-label col-md-2 col-lg-4">
+        {{horse.description}}
+      </label>
+    </div>
+  </div>
+  <!-- End sex and owner row -->
+</div>
+
+<br>
+
+<div class="d-flex flex-row w-auto">
+
+  <button type="button" class="btn btn-light" routerLink="/horses">
+    <i class="bi bi-arrow-left"></i>
+    Back
+  </button>
+
+  <span class="flex-lg-grow-1"></span>
+
+  <button type="button" class="btn btn-danger" (click)="delete(horse.id)">
+    <i class="bi bi-trash"></i>
+    Delete
+  </button>
+
+  <span style="flex: 1"></span>
+  <button type="button" class="btn btn-success" routerLink="/horses/tree/{{horse.id}}">
+    <i class="bi bi-list-nested"></i>
+    Family Tree
+  </button>
+</div>
+</body>
+</html>
