@@ -16,7 +16,7 @@
       <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
       <div class="row">
         <label for="ownerName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          First Name
+          First Name *
         </label>
         <div class="col-md-10 col-lg-8"
         >
@@ -43,7 +43,7 @@
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label for="ownerSurname" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Last Name
+          Last Name *
         </label>
         <div class="col-md-10 col-lg-8"
         >
@@ -68,7 +68,7 @@
     <div class="mb-2 col-lg-6">
       <div class="row">
         <label for="ownerEmail" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
-          Email (Optional)
+          Email
         </label>
         <div class="col-md-10 col-lg-8"
         >
@@ -83,21 +83,40 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <!-- No row and col-* here. We want this to always span the whole width. -->
+    <label for="horseDescription" class="col-form-label text-md-end text-md-end text-muted col-md-2">
+
+    </label>
+    <div class="col-md-10">
+      <label class="col-form-label text-md-end text-md-end text-muted "> Fields marked with * are mandatory.</label>
+    </div>
+  </div>
   <div class="row">
     <!-- Start sex and owner row -->
     <div class="mb-2 col-lg-6">
+
+
       <div class="mt-4 d-flex flex-row">
+        <button type="button" class="btn btn-light" routerLink="/horses">
+          <i class="bi bi-arrow-left"></i>
+          Back
+        </button>
         <span class="flex-grow-1"></span>
         <button type="submit"
                 class="btn btn-primary"
                 [disabled]="!form.valid"
                 type="submit"
         >
+          <i class="bi bi-save2"></i>
           {{submitButtonText}}
         </button>
       </div>
     </div>
   </div>
+
+
 </form>
 
 </body>

@@ -32,7 +32,7 @@ export class OwnerCreateComponent implements OnInit {
   }
 
   public get submitButtonText(): string {
-    return 'Create';
+    return 'Save';
   }
 
   get modeIsCreate(): boolean {

@@ -15,9 +15,18 @@ public record HorseListDto(
     Sex sex,
     OwnerDto owner
 ) {
+
+  //simply returns null if no owner provided, otherwise we get the id
   public Long ownerId() {
     return owner == null
         ? null
         : owner.id();
+  }
+
+  //return the full name of the owner
+  public String ownerName() {
+    return owner == null
+            ? ""
+            : (owner.firstName() + owner.lastName());
   }
 }
