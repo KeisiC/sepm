@@ -21,4 +21,31 @@ export class OwnerService {
       .set('maxAmount', limitTo);
     return this.http.get<Owner[]>(baseUri, { params });
   }
+
+  /**
+   * Get all horses stored in the system
+   *
+   * @return observable list of found horses.
+   */
+  getAll(): Observable<Owner[]> {
+    return this.http.get<Owner[]>(baseUri);
+  }
+
+  /**
+   * Create a new horse in the system.
+   *
+   * @param owner the data for the horse that should be created
+   * @return an Observable for the created horse
+   */
+  create(owner: Owner): Observable<Owner> {
+    return this.http.post<Owner>(
+      baseUri,
+      owner
+    );
+  }
+
+  getById(id: number) {
+    console.log('Load horse details for ' + id);
+    return this.http.get<Owner>(baseUri + '/' + id);
+  }
 }
