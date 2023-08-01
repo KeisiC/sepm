@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+
+<h1 class="display-1">{{heading}}</h1>
+
+
+<form #form="ngForm" (ngSubmit)="onSubmit(form)">
+  <div class="row">
+    <!-- Start name and date of birth row -->
+    <div class="mb-2 col-lg-6">
+      <!-- When nesting rows, always make row > col-* > row. The Bootstrap classes do not work right when an element is both col* and row -->
+      <div class="row">
+        <label for="ownerName" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          First Name
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="ownerName"
+                 name="ownerName"
+                 placeholder="First Name"
+                 class="form-control"
+                 [(ngModel)]="owner.firstName"
+                 required
+          >
+          <div class="invalid-feedback">
+            <!-- This is shown, when the form validation deems the name input to be invalid -->
+            First Name is required
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End name and date of birth row -->
+  </div>
+
+  <div class="row">
+    <!-- Start sex and owner row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="ownerSurname" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Last Name
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="ownerSurname"
+                 name="ownerSurname"
+                 placeholder="Last Name"
+                 class="form-control"
+                 [(ngModel)]="owner.lastName"
+                 required
+          >
+          <div class="invalid-feedback">
+            Last name is required
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Start sex and owner row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="ownerEmail" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Email (Optional)
+        </label>
+        <div class="col-md-10 col-lg-8"
+        >
+          <input type="text"
+                 id="ownerEmail"
+                 name="ownerEmail"
+                 placeholder="Email"
+                 class="form-control"
+                 [(ngModel)]="owner.email"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <!-- Start sex and owner row -->
+    <div class="mb-2 col-lg-6">
+      <div class="mt-4 d-flex flex-row">
+        <span class="flex-grow-1"></span>
+        <button type="submit"
+                class="btn btn-primary"
+                [disabled]="!form.valid"
+                type="submit"
+        >
+          {{submitButtonText}}
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+</body>
+</html>
