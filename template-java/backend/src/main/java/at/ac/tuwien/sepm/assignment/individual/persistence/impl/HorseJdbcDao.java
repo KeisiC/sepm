@@ -35,10 +35,12 @@ public class HorseJdbcDao implements HorseDao {
       + "  , date_of_birth = ?"
       + "  , sex = ?"
       + "  , owner_id = ?"
+      + "  , father_id = ?"
+      + "  , mother_id = ?"
       + " WHERE id = ?";
 
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME
-          + " (name, description, date_of_birth, sex, owner_id/*, mother_id, father_id*/) VALUES(?, ?, ?, ?, ?/*, ?, ?*/)";
+          + " (name, description, date_of_birth, sex, owner_id, mother_id, father_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id=?";
 
@@ -118,19 +120,17 @@ public class HorseJdbcDao implements HorseDao {
         stmt.setNull(5, NULL);
       }
 
-      /*if (horse.mother() != null && horse.mother() != 0) {
-        stmt.setLong(6, horse.mother());
+      if (horse.fatherId() != null && horse.fatherId() != 0) {
+        stmt.setLong(6, horse.fatherId());
       } else {
         stmt.setNull(6, NULL);
       }
 
-      if (horse.father() != null && horse.father() != 0) {
-        stmt.setLong(7, horse.father());
+      if (horse.motherId() != null && horse.motherId() != 0) {
+        stmt.setLong(7, horse.motherId());
       } else {
         stmt.setNull(7, NULL);
       }
-
-       */
 
       return stmt;
     }, keyHolder);
@@ -152,8 +152,8 @@ public class HorseJdbcDao implements HorseDao {
             .setDateOfBirth(horse.dateOfBirth())
             .setSex(horse.sex())
             .setOwnerId(horse.ownerId())
-            //.setMotherId(newHorse.mother())
-            //.setFatherId(newHorse.father())
+            .setMotherId(horse.fatherId())
+            .setFatherId(horse.motherId())
             ;
   }
 
@@ -179,6 +179,9 @@ public class HorseJdbcDao implements HorseDao {
         .setDateOfBirth(result.getDate("date_of_birth").toLocalDate())
         .setSex(Sex.valueOf(result.getString("sex")))
         .setOwnerId(result.getObject("owner_id", Long.class))
-        ;
+        .setFatherId(result.getObject("father_id", Long.class))
+        .setMotherId(result.getObject("mother_id", Long.class))
+
+            ;
   }
 }

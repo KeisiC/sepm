@@ -29,12 +29,14 @@ public class HorseServiceImpl implements HorseService {
   private final HorseMapper mapper;
   private final HorseValidator horseValidator;
   private final OwnerService ownerService;
+  private final HorseService horseService;
 
   public HorseServiceImpl(HorseDao dao, HorseMapper mapper, HorseValidator horseValidator, OwnerService ownerService) {
     this.dao = dao;
     this.mapper = mapper;
     this.horseValidator = horseValidator;
     this.ownerService = ownerService;
+    this.horseService = this;
   }
 
   @Override
@@ -63,7 +65,10 @@ public class HorseServiceImpl implements HorseService {
     var updatedHorse = dao.update(horse);
     return mapper.entityToDetailDto(
         updatedHorse,
-        ownerMapForSingleId(updatedHorse.getOwnerId()));
+        ownerMapForSingleId(updatedHorse.getOwnerId()),
+        fatherMapForSingleId(updatedHorse.getFatherId()),
+        motherMapForSingleId(updatedHorse.getMotherId())
+    );
   }
 
   @Override
@@ -73,14 +78,21 @@ public class HorseServiceImpl implements HorseService {
     var createdHorse = dao.create(horse);
     return mapper.entityToDetailDto(
         createdHorse,
-        ownerMapForSingleId(createdHorse.getOwnerId()));
+            ownerMapForSingleId(createdHorse.getOwnerId()),
+            fatherMapForSingleId(createdHorse.getFatherId()),
+            motherMapForSingleId(createdHorse.getMotherId())
+    );
   }
 
   @Override
   public void delete(Long id) throws NotFoundException {
     LOG.trace("delete({})", id);
     Horse horse = dao.getById(id);
-    mapper.entityToDetailDto(horse, ownerMapForSingleId(horse.getOwnerId()));
+    mapper.entityToDetailDto(horse,
+            ownerMapForSingleId(horse.getOwnerId()),
+            fatherMapForSingleId(horse.getFatherId()),
+            motherMapForSingleId(horse.getMotherId())
+    );
 
     // if the horse to be deleted is a parent, delete that reference from the database as well
     /*List<Horse> horseList = dao.getAll();
@@ -101,7 +113,12 @@ public class HorseServiceImpl implements HorseService {
     Horse horse = dao.getById(id);
     return mapper.entityToDetailDto(
         horse,
-        ownerMapForSingleId(horse.getOwnerId()));
+        ownerMapForSingleId(horse.getOwnerId()),
+        //fathers
+        fatherMapForSingleId(horse.getFatherId()),
+        //mothers
+        motherMapForSingleId(horse.getMotherId())
+    );
   }
 
 
@@ -114,5 +131,26 @@ public class HorseServiceImpl implements HorseService {
       throw new FatalException("Owner %d referenced by horse not found".formatted(ownerId));
     }
   }
+
+  private Map<Long, HorseDetailDto> fatherMapForSingleId(Long fatherId) {
+    try {
+      return fatherId == null
+              ? null
+              : Collections.singletonMap(fatherId, horseService.getById(fatherId));
+    } catch (NotFoundException e) {
+      throw new FatalException("Horse %d referenced by horse not found".formatted(fatherId));
+    }
+  }
+
+  private Map<Long, HorseDetailDto> motherMapForSingleId(Long motherId) {
+    try {
+      return motherId == null
+              ? null
+              : Collections.singletonMap(motherId, horseService.getById(motherId));
+    } catch (NotFoundException e) {
+      throw new FatalException("Horse %d referenced by horse not found".formatted(motherId));
+    }
+  }
+
 
 }

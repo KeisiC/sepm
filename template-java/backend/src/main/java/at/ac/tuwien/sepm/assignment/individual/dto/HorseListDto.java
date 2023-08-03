@@ -29,4 +29,6 @@ public record HorseListDto(
             ? ""
             : (owner.firstName() + owner.lastName());
   }
+
+
 }
