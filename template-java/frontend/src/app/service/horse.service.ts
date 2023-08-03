@@ -2,8 +2,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-import {Horse} from '../dto/horse';
-import {Sex} from '../dto/sex';
+import {Horse, HorseSearch} from '../dto/horse';
 
 const baseUri = environment.backendUrl + '/horses';
 
@@ -67,5 +66,20 @@ export class HorseService {
     return this.http.get<Horse>(baseUri + '/' + id);
   }
 
+  public searchFathersByName(name: string, limitTo: number, horse: Horse): Observable<Horse[]> {
+    let params = new HttpParams()
+      .set('name', name)
+      .set('maxAmount', limitTo);
+    if (horse.sex === 'MALE') {params = params.append('sex', horse.sex);}
+    return this.http.get<Horse[]>(baseUri, {params});
+  }
+
+  public searchMothersByName(name: string, limitTo: number, horse: Horse): Observable<Horse[]> {
+    let params = new HttpParams()
+      .set('name', name)
+      .set('maxAmount', limitTo);
+    if (horse.sex === 'FEMALE') {params = params.append('sex', horse.sex);}
+    return this.http.get<Horse[]>(baseUri, {params});
+  }
 
 }

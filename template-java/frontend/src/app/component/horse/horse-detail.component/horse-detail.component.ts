@@ -79,4 +79,18 @@ export class HorseDetailComponent implements OnInit {
       ? `${owner.firstName} ${owner.lastName}`
       : '';
   }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  fatherName(father: Horse | null): string {
+    return father
+      ? `${father.name}`
+      : '';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  motherName(mother: Horse | null): string {
+    return mother
+      ? `${mother.name}`
+      : '';
+  }
 }

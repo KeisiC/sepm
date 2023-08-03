@@ -101,6 +101,79 @@
     <!-- End sex and owner row -->
   </div>
 
+  <div class="row">
+    <!-- Start father and mother row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseOwner" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Father
+        </label>
+        <app-autocomplete
+          id="horseFather"
+          name="horseFather"
+          class="col-md-10 col-lg-8"
+          textInputClass="form-control"
+          valueNeedsToMatchSuggestion="true"
+          [(ngModel)]="horse.father"
+          [formatModel]="formatFatherName"
+          [suggestions]="fatherSuggestions"
+        ></app-autocomplete>
+      </div>
+    </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseOwner" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+          Mother
+        </label>
+        <app-autocomplete
+          id="horseMother"
+          name="horseMother"
+          class="col-md-10 col-lg-8"
+          textInputClass="form-control"
+          valueNeedsToMatchSuggestion="true"
+          [(ngModel)]="horse.mother"
+          [formatModel]="formatMotherName"
+          [suggestions]="motherSuggestions"
+        ></app-autocomplete>
+      </div>
+    </div>
+    <!-- End father and mother row -->
+  </div>
+
+  <div class="row">
+    <!-- Start sex and owner row -->
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseFather" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+        </label>
+        <div class="col-md-10 col-lg-5">
+          <button type="button"
+                  class="btn btn-outline-danger col-md-10 col-lg-8"
+                  *ngIf="!modeIsCreate"
+                  (click)="removeFather()">Remove Father
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-2 col-lg-6">
+      <div class="row">
+        <label for="horseMother" class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
+
+        </label>
+        <div class="col-md-10 col-lg-5">
+        <button type="button"
+                class="btn btn-outline-danger col-md-10 col-lg-8 "
+                *ngIf="!modeIsCreate"
+                (click)="removeMother()">Remove Mother
+        </button>
+        </div>
+      </div>
+    </div>
+    <!-- End sex and owner row -->
+  </div>
+
 
   <div class="row">
     <!-- No row and col-* here. We want this to always span the whole width. -->

@@ -40,7 +40,7 @@ public class HorseJdbcDao implements HorseDao {
       + " WHERE id = ?";
 
   private static final String SQL_CREATE = "INSERT INTO " + TABLE_NAME
-          + " (name, description, date_of_birth, sex, owner_id, mother_id, father_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
+          + " (name, description, date_of_birth, sex, owner_id, father_id, mother_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id=?";
 
@@ -84,6 +84,8 @@ public class HorseJdbcDao implements HorseDao {
         horse.dateOfBirth(),
         horse.sex().toString(),
         horse.ownerId(),
+        horse.fatherId(),
+        horse.motherId(),
         horse.id());
     if (updated == 0) {
       throw new NotFoundException("Could not update horse with ID " + horse.id() + ", because it does not exist");
@@ -96,6 +98,8 @@ public class HorseJdbcDao implements HorseDao {
         .setDateOfBirth(horse.dateOfBirth())
         .setSex(horse.sex())
         .setOwnerId(horse.ownerId())
+        .setFatherId(horse.fatherId())
+        .setMotherId(horse.motherId())
         ;
   }
 

@@ -25,7 +25,6 @@ public class OwnerServiceImpl implements OwnerService {
 
   private final OwnerDao dao;
   private final OwnerMapper mapper;
-
   private final OwnerValidator ownerValidator;
 
 

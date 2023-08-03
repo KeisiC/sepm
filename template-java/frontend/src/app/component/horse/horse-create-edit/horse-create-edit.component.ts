@@ -34,6 +34,7 @@ export class HorseCreateEditComponent implements OnInit {
   constructor(
     private service: HorseService,
     private ownerService: OwnerService,
+    private horseService: HorseService,
     private router: Router,
     private route: ActivatedRoute,
     private notification: ToastrService,
@@ -82,6 +83,14 @@ export class HorseCreateEditComponent implements OnInit {
     ? of([])
     : this.ownerService.searchByName(input, 5);
 
+  fatherSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.horseService.searchFathersByName(input, 5, this.horse);
+
+  motherSuggestions = (input: string) => (input === '')
+    ? of([])
+    : this.horseService.searchMothersByName(input, 5, this.horse);
+
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.mode = data.mode;
@@ -112,6 +121,18 @@ export class HorseCreateEditComponent implements OnInit {
     return (owner == null)
       ? ''
       : `${owner.firstName} ${owner.lastName}`;
+  }
+
+  public formatFatherName(father: Horse | null | undefined): string {
+    return (father == null)
+      ? ''
+      : `${father.name}`;
+  }
+
+  public formatMotherName(mother: Horse | null | undefined): string {
+    return (mother == null)
+      ? ''
+      : `${mother.name}`;
   }
 
 
@@ -162,5 +183,13 @@ export class HorseCreateEditComponent implements OnInit {
         console.error('Error deleting horse', error);
       }
     );
+  }
+
+  private removeMother(){
+    this.horse.mother = undefined;
+  }
+
+  private removeFather(){
+    this.horse.father = undefined;
   }
 }
