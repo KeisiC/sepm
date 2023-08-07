@@ -14,6 +14,7 @@ import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -93,6 +94,20 @@ public class HorseServiceImpl implements HorseService {
             fatherMapForSingleId(horse.getFatherId()),
             motherMapForSingleId(horse.getMotherId())
     );
+
+    List<Horse> horseList = dao.getAll();
+    for (Horse currHorse : horseList) {
+      // remove the horse as a father from the list
+      if (Objects.equals(currHorse.getFatherId(), horse.getId())) {
+        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
+                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), null, horseService.getById(currHorse.getMotherId())));
+      }
+      // remove the horse as a mother from the list
+      if (Objects.equals(currHorse.getMotherId(), horse.getId())) {
+        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
+                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), horseService.getById(currHorse.getFatherId()), null));
+      }
+    }
 
     // if the horse to be deleted is a parent, delete that reference from the database as well
     /*List<Horse> horseList = dao.getAll();
