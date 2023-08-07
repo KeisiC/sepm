@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.persistence.OwnerDao;
+import at.ac.tuwien.sepm.assignment.individual.type.Sex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class HorseValidator {
   }
 
 
-  public void validateForUpdate(HorseDetailDto updatedHorse) throws ValidationException, ConflictException {
+  public void validateForUpdate(HorseDetailDto updatedHorse) throws ValidationException, ConflictException, NotFoundException {
     LOG.trace("validateForUpdate({})", updatedHorse);
     List<String> validationErrors = new ArrayList<>();
 
@@ -80,6 +81,44 @@ public class HorseValidator {
         ownerDao.getById(updatedHorse.ownerId());
       } catch (NotFoundException e) {
         validationErrors.add("The owner reference of the horse is not in the database");
+      }
+    }
+
+    LOG.info("father...");
+    if (updatedHorse.id() != null && (updatedHorse.id().equals(updatedHorse.father().id()))) {
+      throw new ValidationException("The father reference of the horse cannot be parsed to itself", validationErrors);
+    }
+    if (updatedHorse.father() != null && updatedHorse.father().id() != 0) {
+      try {
+        horseDao.getById(updatedHorse.father().id());
+      } catch (NotFoundException e) {
+        throw new ValidationException("The father reference of the horse is not in the database", validationErrors);
+      }
+      assert updatedHorse.dateOfBirth() != null;
+      if (updatedHorse.dateOfBirth().isBefore(horseDao.getById(updatedHorse.father().id()).getDateOfBirth())) {
+        throw new ValidationException("The father of the horse cannot be younger than the horse", validationErrors);
+      }
+      if (horseDao.getById(updatedHorse.father().id()).getSex() != Sex.MALE) {
+        throw new ValidationException("The father of the horse is not female", validationErrors);
+      }
+    }
+
+    LOG.info("mother...");
+    if (updatedHorse.id() != null && (updatedHorse.id().equals(updatedHorse.mother().id()))) {
+      throw new ValidationException("The mother reference of the horse cannot be parsed to itself", validationErrors);
+    }
+    if (updatedHorse.mother() != null && updatedHorse.mother().id() != 0) {
+      try {
+        horseDao.getById(updatedHorse.mother().id());
+      } catch (NotFoundException e) {
+        throw new ValidationException("The mother reference of the horse is not in the database", validationErrors);
+      }
+      assert updatedHorse.dateOfBirth() != null;
+      if (updatedHorse.dateOfBirth().isBefore(horseDao.getById(updatedHorse.mother().id()).getDateOfBirth())) {
+        throw new ValidationException("The mother of the horse cannot be younger than the horse", validationErrors);
+      }
+      if (horseDao.getById(updatedHorse.mother().id()).getSex() != Sex.FEMALE) {
+        throw new ValidationException("The mother of the horse is not female", validationErrors);
       }
     }
 
