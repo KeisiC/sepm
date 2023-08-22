@@ -98,27 +98,28 @@ public class HorseServiceImpl implements HorseService {
     List<Horse> horseList = dao.getAll();
     for (Horse currHorse : horseList) {
       // remove the horse as a father from the list
-      if (Objects.equals(currHorse.getFatherId(), horse.getId())) {
+      if (Objects.equals(currHorse.getFatherId(), horse.getId()) && currHorse.getMotherId() != null) {
         dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
                 currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), null, horseService.getById(currHorse.getMotherId())));
       }
-      // remove the horse as a mother from the list
-      if (Objects.equals(currHorse.getMotherId(), horse.getId())) {
-        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
-                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), horseService.getById(currHorse.getFatherId()), null));
-      }
-    }
-
-    // if the horse to be deleted is a parent, delete that reference from the database as well
-    /*List<Horse> horseList = dao.getAll();
-    for (Horse currHorse : horseList) {
-      if (Objects.equals(currHorse.getFatherId(), horse.getId()) || Objects.equals(currHorse.getMotherId(), horse.getId())) {
+      // avoid null pointer exception
+      if (Objects.equals(currHorse.getFatherId(), horse.getId()) && currHorse.getMotherId() == null) {
         dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
                 currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), null, null));
       }
-    }
+      // remove the horse as a mother from the list
+      if (Objects.equals(currHorse.getMotherId(), horse.getId()) && currHorse.getFatherId() != null) {
+        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
+                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), horseService.getById(currHorse.getFatherId()), null));
+      }
+      // avoid null pointer exception
+      if (Objects.equals(currHorse.getMotherId(), horse.getId()) && currHorse.getFatherId() == null) {
+        dao.update(new HorseDetailDto(currHorse.getId(), currHorse.getName(), currHorse.getDescription(), currHorse.getDateOfBirth(),
+                currHorse.getSex(), ownerService.getById(currHorse.getOwnerId()), null, null));
+      }
 
-     */
+
+    }
     dao.delete(id);
   }
 
@@ -129,9 +130,7 @@ public class HorseServiceImpl implements HorseService {
     return mapper.entityToDetailDto(
         horse,
         ownerMapForSingleId(horse.getOwnerId()),
-        //fathers
         fatherMapForSingleId(horse.getFatherId()),
-        //mothers
         motherMapForSingleId(horse.getMotherId())
     );
   }

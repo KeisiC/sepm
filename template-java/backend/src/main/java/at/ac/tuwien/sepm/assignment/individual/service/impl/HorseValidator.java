@@ -84,7 +84,7 @@ public class HorseValidator {
       }
     }
 
-    LOG.info("father...");
+    /*LOG.info("father...");
     if (updatedHorse.id() != null && (updatedHorse.id().equals(updatedHorse.father().id()))) {
       throw new ValidationException("The father reference of the horse cannot be parsed to itself", validationErrors);
     }
@@ -103,7 +103,9 @@ public class HorseValidator {
       }
     }
 
-    LOG.info("mother...");
+     */
+
+    /*LOG.info("mother...");
     if (updatedHorse.id() != null && (updatedHorse.id().equals(updatedHorse.mother().id()))) {
       throw new ValidationException("The mother reference of the horse cannot be parsed to itself", validationErrors);
     }
@@ -121,6 +123,8 @@ public class HorseValidator {
         throw new ValidationException("The mother of the horse is not female", validationErrors);
       }
     }
+
+     */
 
     // TODO this is not complete…
 
