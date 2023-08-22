@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.service;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
@@ -60,4 +61,18 @@ public interface HorseService {
    * @throws NotFoundException if the horse with the given ID does not exist in the persistent data store
    */
   HorseDetailDto getById(long id) throws NotFoundException;
+
+  /**
+   * Search for horses matching the criteria in {@code searchParameters}.
+   * <p>
+   * A horse is considered matched, if its name contains {@code searchParameters.name} as a substring.
+   * The returned stream of horse never contains more than {@code searchParameters.maxAmount} elements,
+   *  even if there would be more matches in the persistent data store.
+   * </p>
+   *
+   * @param searchParameters object containing the search parameters to match
+   * @return a stream containing owners matching the criteria in {@code searchParameters}
+   * @throws NotFoundException if no horses are found in the database.
+   */
+  Stream<HorseListDto> search(HorseSearchDto searchParameters) throws NotFoundException;
 }

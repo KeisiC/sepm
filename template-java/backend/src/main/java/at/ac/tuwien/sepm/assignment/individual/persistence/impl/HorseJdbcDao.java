@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
@@ -12,11 +13,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +46,14 @@ public class HorseJdbcDao implements HorseDao {
           + " (name, description, date_of_birth, sex, owner_id, father_id, mother_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
   private static final String SQL_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE id=?";
+
+  private static final String SQL_SELECT_SEARCH = "SELECT * FROM " + TABLE_NAME
+          + " WHERE ( ? IS NULL OR LOWER(name) LIKE LOWER(?) )"
+          + " AND ( ? IS NULL OR LOWER(description) LIKE LOWER(?) )"
+          + " AND ( ? IS NULL OR date_of_birth < ? )"
+          + " AND ( ? IS NULL OR LOWER(sex) LIKE LOWER(?) )"
+          + " AND ( ? IS NULL OR owner_id = ? )";
+
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -173,6 +184,67 @@ public class HorseJdbcDao implements HorseDao {
     if (changes == 0) {
       throw new NotFoundException("Could not delete horse with ID " + id);
     }
+  }
+
+  @Override
+  public Collection<Horse> search(HorseSearchDto searchParameters, Long id) {
+    LOG.trace("search({})", searchParameters);
+
+    if (searchParameters.name() == null
+            && searchParameters.description() == null
+            && searchParameters.bornBefore() == null
+            && searchParameters.sex() == null
+            && searchParameters.ownerName() == null) {
+      return this.getAll();
+    }
+
+    List<Horse> horses;
+
+    PreparedStatementCreator cr = connection -> {
+      PreparedStatement stmt = connection.prepareStatement(SQL_SELECT_SEARCH);
+
+      if (searchParameters.name() != null) {
+        stmt.setString(1, "%" + searchParameters.name().trim() + "%");
+        stmt.setString(2, "%" + searchParameters.name().trim() + "%");
+      } else {
+        stmt.setNull(1, NULL);
+        stmt.setNull(2, NULL);
+      }
+      if (searchParameters.description() != null) {
+        stmt.setString(3, "%" + searchParameters.description().trim() + "%");
+        stmt.setString(4, "%" + searchParameters.description().trim() + "%");
+      } else {
+        stmt.setNull(3, NULL);
+        stmt.setNull(4, NULL);
+      }
+      if (searchParameters.bornBefore() != null) {
+        stmt.setObject(5, searchParameters.bornBefore());
+        stmt.setObject(6, searchParameters.bornBefore());
+      } else {
+        stmt.setNull(5, NULL);
+        stmt.setNull(6, NULL);
+      }
+      if (searchParameters.sex() != null) {
+        stmt.setString(7, searchParameters.sex().toString().trim());
+        stmt.setString(8, searchParameters.sex().toString().trim());
+      } else {
+        stmt.setNull(7, NULL);
+        stmt.setNull(8, NULL);
+      }
+      // this is probably wrong... its a string and not a Long
+      if (searchParameters.ownerName() != null) {
+        stmt.setLong(9, id);
+        stmt.setLong(10, id);
+      } else {
+        stmt.setNull(9, NULL);
+        stmt.setNull(10, NULL);
+      }
+      return stmt;
+    };
+
+    horses = jdbcTemplate.query(cr, this::mapRow);
+
+    return horses;
   }
 
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {

@@ -1,9 +1,12 @@
 package at.ac.tuwien.sepm.assignment.individual.persistence;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -54,4 +57,13 @@ public interface HorseDao {
    * @throws NotFoundException  When no {@link Horse} with the given id exists.
    */
   void delete(Long id) throws NotFoundException;
+
+  /**
+   * Get the horses which match the parameters from the search.
+   *
+   * @param searchParameters which contains the parameters from the search.
+   * @return the list of horses, which match the parameters.
+   * @throws FatalException will be thrown if something goes wrong while accessing the persistent data store.
+   */
+  Collection<Horse> search(HorseSearchDto searchParameters, Long id);
 }

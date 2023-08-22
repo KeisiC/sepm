@@ -1,8 +1,6 @@
 package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
-import at.ac.tuwien.sepm.assignment.individual.dto.OwnerDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.*;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
@@ -13,10 +11,7 @@ import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
 import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import at.ac.tuwien.sepm.assignment.individual.service.OwnerService;
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -166,5 +161,51 @@ public class HorseServiceImpl implements HorseService {
     }
   }
 
+  @Override
+  public Stream<HorseListDto> search(HorseSearchDto searchParameters) {
+    LOG.trace("search({})", searchParameters);
 
+    LOG.info("Retrieving the owners in right format...");
+    List<Horse> horses = new LinkedList<>();
+    List<OwnerDto> owners = ownerService.search(new OwnerSearchDto(searchParameters.ownerName(), null)).toList();
+    List<Long> idList = new ArrayList<>();
+
+    for (OwnerDto owner : owners) {
+      idList.add(owner.id());
+    }
+
+    if (searchParameters.ownerName() != null) {
+      for (Long id : idList) {
+        horses.addAll(dao.search(searchParameters, id));
+      }
+    } else {
+      horses.addAll(dao.search(searchParameters, null));
+    }
+    List<Horse> sortedList = new LinkedList<>();
+    List<Horse> allHorses = dao.getAll();
+
+    for (Horse horseDto : allHorses) {
+      for (Horse horse : horses) {
+        if (Objects.equals(horseDto.getId(), horse.getId())) {
+          sortedList.add(horse);
+        }
+      }
+    }
+
+    var ownerIds = sortedList.stream()
+            .map(Horse::getOwnerId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableSet());
+
+    Map<Long, OwnerDto> ownerMap;
+    try {
+      ownerMap = ownerService.getAllById(ownerIds);
+
+    } catch (NotFoundException e) {
+      throw new FatalException("Horse, that is already persisted, refers to non-existing owner", e);
+    }
+
+    return sortedList.stream()
+            .map(horse -> mapper.entityToListDto(horse, ownerMap));
+  }
 }

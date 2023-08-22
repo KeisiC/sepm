@@ -29,10 +29,18 @@ public class HorseEndpoint {
 
   @GetMapping
   public Stream<HorseListDto> searchHorses(HorseSearchDto searchParameters) {
-    LOG.info("GET " + BASE_PATH);
+    LOG.info("GET " + BASE_PATH + " " + searchParameters.toString());
     LOG.debug("request parameters: {}", searchParameters);
+    //LOG.info("GET " + BASE_PATH);
     // TODO We have the request params in the DTO now, but don't do anything with them yet…
-    return service.allHorses();
+    //return service.allHorses();
+    try {
+      return service.search(searchParameters);
+    } catch (NotFoundException e) {
+      HttpStatus status = HttpStatus.NOT_FOUND;
+      logClientError(status, "No horses with these parameters", e);
+      throw new ResponseStatusException(status, e.getMessage(), e);
+    }
   }
 
   @GetMapping("{id}")
@@ -70,16 +78,6 @@ public class HorseEndpoint {
     LOG.debug("Body of request:\n{}", horse);
     return service.create(horse);
   }
-
-  /*
-  @PostMapping
-    public ResponseEntity<HorseDto> addHorse(@RequestBody @Valid AddUpdateHorseDto addHorseDto) {
-        log.info("A user is trying to create a new horse.");
-        var addedHorseDto = service.addHorse(addHorseDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addedHorseDto);
-    }
-   */
-
 
   @DeleteMapping("{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
