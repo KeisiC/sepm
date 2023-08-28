@@ -24,6 +24,14 @@ export class HorseComponent implements OnInit {
     ownerName: ''
   };
 
+  horseSearch: HorseSearch = {
+    name: '',
+    description: '',
+    bornBefore: '',
+    sex: Sex.unassigned,
+    ownerName: ''
+  };
+
   constructor(
     private service: HorseService,
     private notification: ToastrService,
@@ -36,7 +44,7 @@ export class HorseComponent implements OnInit {
   }
 
   reloadHorses() {
-    this.service.getAll()
+    this.service.getSearchedHorses(this.horseSearch)
       .subscribe({
         next: data => {
           this.horses = data;

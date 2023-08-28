@@ -16,6 +16,7 @@ export interface Horse {
 export interface HorseSearch {
   name?: string;
   // TODO fill in missing fields
+  // these should also probably have a ?
   description: string;
   bornBefore: string;
   sex: Sex;

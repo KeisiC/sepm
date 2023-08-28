@@ -66,20 +66,39 @@ export class HorseService {
     return this.http.get<Horse>(baseUri + '/' + id);
   }
 
-  public searchFathersByName(name: string, limitTo: number, horse: Horse): Observable<Horse[]> {
-    let params = new HttpParams()
+  public searchFathersByName(name: string, limitTo: number): Observable<Horse[]> {
+    const params = new HttpParams()
       .set('name', name)
+      // does not work!!!!
+      .set('sex', 'MALE')
       .set('maxAmount', limitTo);
-    if (horse.sex === 'MALE') {params = params.append('sex', horse.sex);}
+    //if (horse.sex === 'MALE') {params = params.append('sex', horse.sex);}
     return this.http.get<Horse[]>(baseUri, {params});
   }
 
-  public searchMothersByName(name: string, limitTo: number, horse: Horse): Observable<Horse[]> {
-    let params = new HttpParams()
+  public searchMothersByName(name: string, limitTo: number): Observable<Horse[]> {
+    const params = new HttpParams()
       .set('name', name)
+      // does not work!!!!
+      .set('sex', 'FEMALE')
       .set('maxAmount', limitTo);
-    if (horse.sex === 'FEMALE') {params = params.append('sex', horse.sex);}
+    //if (horse.sex === 'FEMALE') {params = params.append('sex', horse.sex);}
     return this.http.get<Horse[]>(baseUri, {params});
   }
 
+  /**
+   * Fetches all horses from the backend that match te specified parameters
+   *
+   * @param horse with parameters to be searched
+   */
+  getSearchedHorses(horse: HorseSearch): Observable<Horse[]> {
+    console.log('Load all searched horses', horse);
+    let params = new HttpParams();
+    if (horse.name !== null && horse.name!== undefined) {params = params.append('name', horse.name);}
+    if (horse.description !== null && horse.name!== undefined) {params = params.append('description', horse.description);}
+    if (horse.bornBefore !== null) {params = params.append('bornBefore', horse.bornBefore);}
+    if (horse.sex !== null) {params = params.append('sex', horse.sex);}
+    if (horse.ownerName !== null ) {params = params.append('ownerName', horse.ownerName);}
+    return this.http.get<Horse[]>(baseUri, {params,});
+  }
 }
