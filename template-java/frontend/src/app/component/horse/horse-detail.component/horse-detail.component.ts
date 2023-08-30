@@ -33,7 +33,6 @@ export class HorseDetailComponent implements OnInit {
   ) {
   }
 
-
   public get heading(): string {
     return 'Details of existing horse';
 
@@ -71,6 +70,13 @@ export class HorseDetailComponent implements OnInit {
         console.error('Error deleting horse', error);
       }
     );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  loadMother(id: number) {
+        this.router.navigate(['/horses/' + id]);
+        //this.notification.success(`Horse ${this.horse.name} successfully deleted.`);
+        console.log('Successfully loaded horse');
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering

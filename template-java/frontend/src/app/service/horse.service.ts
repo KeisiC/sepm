@@ -69,20 +69,16 @@ export class HorseService {
   public searchFathersByName(name: string, limitTo: number): Observable<Horse[]> {
     const params = new HttpParams()
       .set('name', name)
-      // does not work!!!!
       .set('sex', 'MALE')
       .set('maxAmount', limitTo);
-    //if (horse.sex === 'MALE') {params = params.append('sex', horse.sex);}
     return this.http.get<Horse[]>(baseUri, {params});
   }
 
   public searchMothersByName(name: string, limitTo: number): Observable<Horse[]> {
     const params = new HttpParams()
       .set('name', name)
-      // does not work!!!!
       .set('sex', 'FEMALE')
       .set('maxAmount', limitTo);
-    //if (horse.sex === 'FEMALE') {params = params.append('sex', horse.sex);}
     return this.http.get<Horse[]>(baseUri, {params});
   }
 
@@ -101,4 +97,14 @@ export class HorseService {
     if (horse.ownerName !== null ) {params = params.append('ownerName', horse.ownerName);}
     return this.http.get<Horse[]>(baseUri, {params,});
   }
+
+  /*public loadMaleHorses(horse: HorseSearch): Observable<Horse[]> {
+    console.log('Load all male horses', horse);
+    let params = new HttpParams();
+    if (horse.name !== null && horse.name!== undefined) {params = params.append('name', horse.name);}
+    if (horse.sex !== null) {params = params.append('sex', 'MALE');}
+    return this.http.get<Horse[]>(baseUri, {params,});
+  }
+
+   */
 }

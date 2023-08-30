@@ -78,7 +78,7 @@
       <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
         Father
       </label>
-      <label class="col-form-label col-md-2 col-lg-4">
+      <label class="col-form-label col-md-2 col-lg-4 btn-link" routerLink="/horses/{{horse.father?.id}}">
         {{fatherName(horse.father)}}
       </label>
     </div>
@@ -89,7 +89,11 @@
       <label  class="col-form-label text-md-end text-muted col-md-2 col-lg-4">
         Mother
       </label>
-      <label class="col-form-label col-md-2 col-lg-4">
+      <!--
+      routerLink does not work, it needs constant refreshing
+      check this link: https://stackoverflow.com/questions/71420791/how-to-refresh-the-page-in-angular-with-routerlink-and-id
+      -->
+      <label class="col-form-label col-md-2 col-lg-4 btn-link" routerLink="/horses/{{horse.mother?.id}}">
         {{motherName(horse.mother)}}
       </label>
     </div>
@@ -131,5 +135,15 @@
     Family Tree
   </button>
 </div>
+
+
+<ng-template #mother>
+  {{horse.mother?.name}}
+  <span class="bi bi-eye" routerLink="/horses/{{horse.mother?.id}}" style="cursor: pointer"></span>
+</ng-template>
+<ng-template #father>
+  {{horse.father?.name}}
+  <span class="bi bi-eye" routerLink="/horses/{{horse.father?.id}}" style="cursor: pointer"></span>
+</ng-template>
 </body>
 </html>

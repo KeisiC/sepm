@@ -3,7 +3,7 @@ import {NgForm, NgModel} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {Observable, of} from 'rxjs';
-import {Horse} from 'src/app/dto/horse';
+import {Horse, HorseSearch} from 'src/app/dto/horse';
 import {Owner} from 'src/app/dto/owner';
 import {Sex} from 'src/app/dto/sex';
 import {HorseService} from 'src/app/service/horse.service';
@@ -28,6 +28,14 @@ export class HorseCreateEditComponent implements OnInit {
     description: '',
     dateOfBirth: new Date(),
     sex: Sex.unassigned,
+  };
+
+  horseSearch: HorseSearch = {
+    name: '',
+    description: '',
+    bornBefore: '',
+    sex: Sex.unassigned,
+    ownerName: ''
   };
 
 
@@ -85,11 +93,11 @@ export class HorseCreateEditComponent implements OnInit {
 
   fatherSuggestions = (input: string) => (input === '')
     ? of([])
-    : this.horseService.searchFathersByName(input, 5, this.horse);
+    : this.horseService.searchFathersByName(input, 5);
 
   motherSuggestions = (input: string) => (input === '')
     ? of([])
-    : this.horseService.searchMothersByName(input, 5, this.horse);
+    : this.horseService.searchMothersByName(input, 5);
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {

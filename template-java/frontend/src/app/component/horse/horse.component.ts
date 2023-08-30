@@ -44,6 +44,23 @@ export class HorseComponent implements OnInit {
   }
 
   reloadHorses() {
+    this.service.getAll()
+      .subscribe({
+        next: data => {
+          this.horses = data;
+        },
+        error: error => {
+          console.error('Error fetching horses', error);
+          this.bannerError = 'Could not fetch horses: ' + error.message;
+          const errorMessage = error.status === 0
+            ? 'Is the backend up?'
+            : error.message.message;
+          this.notification.error(errorMessage, 'Could Not Fetch Horses');
+        }
+      });
+  }
+
+  searchHorses() {
     this.service.getSearchedHorses(this.horseSearch)
       .subscribe({
         next: data => {
