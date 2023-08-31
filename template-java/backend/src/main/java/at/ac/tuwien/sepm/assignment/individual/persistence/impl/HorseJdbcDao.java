@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.assignment.individual.persistence.impl;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseTree;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.persistence.HorseDao;
@@ -13,11 +14,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -30,6 +31,8 @@ public class HorseJdbcDao implements HorseDao {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final String TABLE_NAME = "horse";
+  private static final String OWNER_ID = "owner_id";
+
   private static final String SQL_SELECT_ALL = "SELECT * FROM " + TABLE_NAME;
   private static final String SQL_SELECT_BY_ID = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
   private static final String SQL_UPDATE = "UPDATE " + TABLE_NAME
@@ -54,6 +57,11 @@ public class HorseJdbcDao implements HorseDao {
           + " AND ( ? IS NULL OR LOWER(sex) LIKE LOWER(?) )"
           + " AND ( ? IS NULL OR owner_id = ? )";
 
+  private static final String SQL_TREE = "WITH RECURSIVE ancestor(id, name, description, date_of_birth, sex, owner_id, mother_id, father_id, depth) AS ( "
+          + "SELECT *, 1 as depth FROM " + TABLE_NAME + " WHERE id = ? "
+          + "UNION ALL SELECT " + TABLE_NAME + ".*, (ancestor.depth + 1) FROM " + TABLE_NAME + ", ancestor "
+          + "WHERE (ancestor.mother_id = " + TABLE_NAME + ".id OR ancestor.father_id = " + TABLE_NAME + ".id) AND ancestor.depth < ? "
+          + ") SELECT ancestor.*, " + OWNER_ID + " FROM ancestor;";
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -247,6 +255,54 @@ public class HorseJdbcDao implements HorseDao {
     return horses;
   }
 
+  @Override
+  public HorseTree getTree(Long id, Integer depth) throws NotFoundException {
+    LOG.trace("getTree({}, {})", id, depth);
+
+    this.getById(id);
+
+    List<Horse> horses;
+    try {
+      PreparedStatementCreator cr = connection -> {
+        PreparedStatement stmt = connection.prepareStatement(SQL_TREE);
+        stmt.setLong(1, id);
+        stmt.setLong(2, depth);
+        return stmt;
+      };
+
+      horses = jdbcTemplate.query(cr, this::mapTreeRow);
+    } catch (DataAccessException e) {
+      throw new NotFoundException(e);
+    }
+
+    HashMap<Long, Horse> map = new HashMap<>();
+    for (Horse horse : horses) {
+      map.put(horse.getId(), horse);
+    }
+
+    return horsesToTree(map, id);
+  }
+
+  private HorseTree horsesToTree(Map<Long, Horse> horses, Long root) {
+    LOG.debug("Mapping horses {} to tree {}...", horses, root);
+
+    if (root == null) {
+      return null;
+    }
+    Horse horse = horses.get(root);
+    if (horse == null) {
+      return null;
+    }
+    HorseTree tree = new HorseTree();
+    tree.setId(horse.getId());
+    tree.setName(horse.getName());
+    tree.setDateOfBirth(horse.getDateOfBirth());
+    tree.setSex(horse.getSex());
+    tree.setMother(horsesToTree(horses, horse.getMotherId()));
+    tree.setFather(horsesToTree(horses, horse.getFatherId()));
+    return tree;
+  }
+
   private Horse mapRow(ResultSet result, int rownum) throws SQLException {
     return new Horse()
         .setId(result.getLong("id"))
@@ -257,7 +313,19 @@ public class HorseJdbcDao implements HorseDao {
         .setOwnerId(result.getObject("owner_id", Long.class))
         .setFatherId(result.getObject("father_id", Long.class))
         .setMotherId(result.getObject("mother_id", Long.class))
-
             ;
+  }
+
+  private Horse mapTreeRow(ResultSet resultSet, int i) throws SQLException {
+    LOG.debug("Mapping horse tree {}...", resultSet);
+
+    final Horse horse = new Horse();
+    horse.setId(resultSet.getLong("id"));
+    horse.setName(resultSet.getString("name"));
+    horse.setDateOfBirth(resultSet.getDate("date_of_birth").toLocalDate());
+    horse.setSex(Sex.valueOf(resultSet.getString("sex")));
+    horse.setMotherId(resultSet.getLong("mother_id"));
+    horse.setFatherId(resultSet.getLong("father_id"));
+    return horse;
   }
 }

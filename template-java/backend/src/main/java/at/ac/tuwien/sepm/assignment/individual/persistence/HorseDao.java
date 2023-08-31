@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.assignment.individual.persistence;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseTree;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 
@@ -66,4 +67,14 @@ public interface HorseDao {
    * @throws FatalException will be thrown if something goes wrong while accessing the persistent data store.
    */
   Collection<Horse> search(HorseSearchDto searchParameters, Long id);
+
+  /**
+   * Family tree of ancestors for a horse.
+   *
+   * @param id    of the horse we are getting the tree from.
+   * @param depth of the tree (number of ancestors).
+   * @throws FatalException will be thrown if something goes wrong while accessing the persistent data store.
+   * @throws NotFoundException will be thrown if the horse could not be found in the database.
+   */
+  HorseTree getTree(Long id, Integer depth) throws NotFoundException;
 }

@@ -3,9 +3,11 @@ package at.ac.tuwien.sepm.assignment.individual.rest;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
+import at.ac.tuwien.sepm.assignment.individual.dto.HorseTreeDto;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
+import at.ac.tuwien.sepm.assignment.individual.mapper.HorseTreeMapper;
 import at.ac.tuwien.sepm.assignment.individual.service.HorseService;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Stream;
@@ -23,8 +25,12 @@ public class HorseEndpoint {
 
   private final HorseService service;
 
-  public HorseEndpoint(HorseService service) {
+  private final HorseTreeMapper horseTreeMapper;
+
+
+  public HorseEndpoint(HorseService service, HorseTreeMapper horseTreeMapper) {
     this.service = service;
+    this.horseTreeMapper = horseTreeMapper;
   }
 
   @GetMapping
@@ -94,6 +100,26 @@ public class HorseEndpoint {
       throw new ResponseStatusException(status, e.getMessage(), e);
     }
   }
+  @GetMapping(value = "/tree/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public HorseTreeDto getTree(@PathVariable("id") Long id, @RequestParam(required = false) Integer depth) {
+    LOG.info("GET " + BASE_PATH + "/tree{}?depth={}", id, depth);
+    LOG.debug("Tree of entity {} of request with depth {}:", id, depth);
+    // if depth is not set it will be 3
+    if (depth == null) {
+      depth = 3;
+    }
+    try {
+      return horseTreeMapper.entityToDto(service.getTree(id, depth));
+    } catch (NotFoundException e) {
+      LOG.error(e.getMessage(), e);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Horse not found: " + e.getMessage(), e);
+    } catch (ValidationException e) {
+      LOG.error(e.getMessage(), e);
+      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), e);
+    }
+  }
+
 
   private void logClientError(HttpStatus status, String message, Exception e) {
     LOG.warn("{} {}: {}: {}", status.value(), message, e.getClass().getSimpleName(), e.getMessage());

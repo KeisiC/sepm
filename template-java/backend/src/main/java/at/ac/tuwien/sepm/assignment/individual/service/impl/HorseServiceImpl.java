@@ -2,6 +2,7 @@ package at.ac.tuwien.sepm.assignment.individual.service.impl;
 
 import at.ac.tuwien.sepm.assignment.individual.dto.*;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseTree;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.FatalException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
@@ -205,7 +206,15 @@ public class HorseServiceImpl implements HorseService {
       throw new FatalException("Horse, that is already persisted, refers to non-existing owner", e);
     }
 
-    return sortedList.stream()
-            .map(horse -> mapper.entityToListDto(horse, ownerMap));
+    return sortedList.stream().map(horse -> mapper.entityToListDto(horse, ownerMap));
+  }
+
+  @Override
+  public HorseTree getTree(Long id, Integer depth) throws NotFoundException {
+    LOG.trace("getTree({}, {})", id, depth);
+    if (depth <= 0) {
+      //throw new ValidationException("Tree depth is invalid.", e);
+    }
+    return dao.getTree(id, depth);
   }
 }

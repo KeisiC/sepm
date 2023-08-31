@@ -4,6 +4,7 @@ import at.ac.tuwien.sepm.assignment.individual.dto.HorseDetailDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseListDto;
 import at.ac.tuwien.sepm.assignment.individual.dto.HorseSearchDto;
 import at.ac.tuwien.sepm.assignment.individual.entity.Horse;
+import at.ac.tuwien.sepm.assignment.individual.entity.HorseTree;
 import at.ac.tuwien.sepm.assignment.individual.exception.ConflictException;
 import at.ac.tuwien.sepm.assignment.individual.exception.NotFoundException;
 import at.ac.tuwien.sepm.assignment.individual.exception.ValidationException;
@@ -75,4 +76,14 @@ public interface HorseService {
    * @throws NotFoundException if no horses are found in the database.
    */
   Stream<HorseListDto> search(HorseSearchDto searchParameters) throws NotFoundException;
+
+  /**
+   * Family tree of ancestors for a horse.
+   *
+   * @param id    of the horse we are getting the tree from.
+   * @param depth of the tree (number of ancestors).
+   * @throws ValidationException will be thrown if there is a problem while accessing database.
+   * @throws NotFoundException if no horses are found in the database.
+   */
+  HorseTree getTree(Long id, Integer depth) throws ValidationException, NotFoundException;
 }

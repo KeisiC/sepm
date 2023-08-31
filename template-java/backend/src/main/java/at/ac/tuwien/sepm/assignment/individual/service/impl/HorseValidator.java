@@ -186,6 +186,9 @@ public class HorseValidator {
       throw new ValidationException("Created horse is not valid", validationErrors);
     }
 
+    // should validate date of birth for mother and father, but you can make sure you get the right horses in the frontend
+    // when they are suggested in the list of male and female horses, you add another parameter filtering the date (bornbefore)
+
     /*LOG.info("Validating parameter: mother...");
     if (newHorse.id() != null && Objects.equals(newHorse.id(), newHorse.mother())) {
       throw new ValidationException("The mother reference of the horse cannot be parsed to itself", validationErrors);
