@@ -46,12 +46,12 @@ VALUES (-1, 'James', 'Potter', 'potter.james@gmail.com'),
 INSERT INTO horse (id, name, description, date_of_birth, sex, owner_id, father_id, mother_id)
 VALUES (-1, 'Wendy', 'cute and friendly', '1967-02-06', 'FEMALE', -1, null, null),
        (-2, 'Bella', 'always hungry', '1969-03-08', 'FEMALE', -2, null, null),
-       (-3, 'Thunder', 'sleepy', '1999-05-13', 'MALE', -3, null, null),
-       (-4, 'Alexa', 'hard working', '1999-11-29', 'FEMALE', -4, null, null),
-       (-5, 'Tommy', 'sneaky', '2002-06-09', 'MALE', -5, null, null),
-       (-6, 'Spirit', 'does not know when to stop', '2001-09-12', 'FEMALE', -6, null, null),
+       (-3, 'Thunder', 'sleepy', '1999-05-13', 'MALE', -3, null, -1),
+       (-4, 'Alexa', 'hard working', '1999-11-29', 'FEMALE', -4, null, -2),
+       (-5, 'Tommy', 'sneaky', '2002-06-09', 'MALE', -5, -3, -1),
+       (-6, 'Spirit', 'does not know when to stop', '2001-09-12', 'FEMALE', -6, -3, -2),
        (-7, 'Charlie', 'friends with Thunder', '2001-12-12', 'MALE', -7, null, null),
-       (-8, 'Misha', 'likes Charlie', '2015-09-07', 'FEMALE', -8, null, null),
+       (-8, 'Misha', 'likes Charlie', '2015-09-07', 'FEMALE', -8, -5, -8),
        (-9, 'Sugar', 'fastest on track', '2014-08-30', 'MALE', -9, -5, -4),
-       (-10, 'Storm', 'just a normal horse', '2020-12-12', 'MALE', -10, -3, -1)
+       (-10, 'Storm', 'just a normal horse', '2020-12-12', 'MALE', -10, -7, -6)
 ;
